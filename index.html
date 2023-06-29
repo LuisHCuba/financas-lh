@@ -3,7 +3,6 @@
 <head>
   <title>Registro de Lançamentos Financeiros</title>
   <meta charset="UTF-8">
-  <script src="https://apis.google.com/js/api.js"></script>
   <style>
     body {
       background-color: #f2f2f2;
@@ -109,14 +108,15 @@
         max-width: 300px;
       }
     }
-    /* Estilos CSS do formulário aqui */
   </style>
 </head>
 <body>
+  <div class="background-animation"></div>
+
   <div class="container">
     <h1>Registro de Lançamentos Financeiros</h1>
-    <form id="registroForm">
-     <label for="descricao">Descrição:</label>
+    <form>
+      <label for="descricao">Descrição:</label>
       <input type="text" id="descricao" name="descricao" required>
 
       <label for="valor">Valor:</label>
@@ -132,70 +132,8 @@
         <option value="entrada">Entrada</option>
       </select>
 
-      <input type="submit" value="Registrar"> <!-- Campos do formulário aqui -->
+      <input type="submit" value="Registrar">
     </form>
   </div>
-
-  <script>
-    // Configurações da API do Google Sheets
-    var CLIENT_ID = '266140601859-s0s3d4kumqip939itasrjet52vk4kqif.apps.googleusercontent.com';
-    var API_KEY = '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';
-    var SPREADSHEET_ID = '13RoanMZRVqmOpvGW7arWGP9iN-LYG0P8Hqc5hHaVjVs';
-
-    // Nome da planilha e intervalo de células onde os dados serão salvos
-    var SHEET_NAME = 'Finanças';
-    var RANGE = SHEET_NAME + '!A1:D';
-
-    // Inicialização da API do Google Sheets
-    function init() {
-      gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-        scope: 'https://www.googleapis.com/auth/spreadsheets'
-      }).then(function() {
-        // Adiciona o evento de envio do formulário
-        document.getElementById('registroForm').addEventListener('submit', saveData);
-      });
-    }
-
-    // Função para salvar os dados no Google Sheets
-    function saveData(event) {
-      event.preventDefault(); // Evita o envio padrão do formulário
-
-      // Obter os valores dos campos do formulário
-      var descricao = document.getElementById('descricao').value;
-      var valor = document.getElementById('valor').value;
-      var data = document.getElementById('data').value;
-      var movimento = document.getElementById('movimento').value;
-
-      // Montar os dados em um array para enviar ao Google Sheets
-      var rowData = [descricao, valor, data, movimento];
-
-      // Fazer a chamada para a API do Google Sheets para salvar os dados
-      gapi.client.sheets.spreadsheets.values.append({
-        spreadsheetId: SPREADSHEET_ID,
-        range: RANGE,
-        valueInputOption: 'USER_ENTERED',
-        resource: { values: [rowData] }
-      }).then(function(response) {
-        console.log('Dados salvos com sucesso!');
-        alert('Lançamento registrado com sucesso!');
-        // Limpar os campos do formulário
-        document.getElementById('descricao').value = '';
-        document.getElementById('valor').value = '';
-        document.getElementById('data').value = '';
-        document.getElementById('movimento').value = '';
-      }, function(error) {
-        console.error('Erro ao salvar os dados:', error);
-        alert('Ocorreu um erro ao salvar o lançamento.');
-      });
-    }
-
-    // Carregar a biblioteca da API do Google Sheets
-    gapi.load('client', init);
-  </script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
 </body>
 </html>
