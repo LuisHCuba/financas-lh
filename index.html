@@ -1,0 +1,200 @@
+<html>
+<head>
+  <title>Registro de Lançamentos Financeiros</title>
+  <meta charset="UTF-8">
+  <script src="https://apis.google.com/js/api.js"></script>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 400px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      background-image: url('https://th.bing.com/th/id/R.b0e6eaafe6cbde135bd866b3b7cc4a55?rik=KL9zToa9vtuEYA&riu=http%3a%2f%2fclipart-library.com%2fimages_k%2fmoney-logo-transparent%2fmoney-logo-transparent-14.png&ehk=r36Q6laaIjUh%2f80B8U6AyuUEYp8zHW2QTCVPELXiYvE%3d&risl=&pid=ImgRaw&r=0');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5
+    }
+
+    @keyframes rotateBackground {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media only screen and (max-width: 600px) {
+      .container {
+        width: 90%;
+        max-width: 300px;
+      }
+    }
+    /* Estilos CSS do formulário aqui */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de Lançamentos Financeiros</h1>
+    <form id="registroForm">
+     <label for="descricao">Descrição:</label>
+      <input type="text" id="descricao" name="descricao" required>
+
+      <label for="valor">Valor:</label>
+      <input type="number" id="valor" name="valor" required>
+
+      <label for="data">Data:</label>
+      <input type="date" id="data" name="data" required>
+
+      <label for="movimento">Movimento:</label>
+      <select id="movimento" name="movimento" required>
+        <option value="">Selecione</option>
+        <option value="saida">Saída</option>
+        <option value="entrada">Entrada</option>
+      </select>
+
+      <input type="submit" value="Registrar"> <!-- Campos do formulário aqui -->
+    </form>
+  </div>
+
+  <script>
+    // Configurações da API do Google Sheets
+    var CLIENT_ID = '266140601859-s0s3d4kumqip939itasrjet52vk4kqif.apps.googleusercontent.com';
+    var API_KEY = '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';
+    var SPREADSHEET_ID = '13RoanMZRVqmOpvGW7arWGP9iN-LYG0P8Hqc5hHaVjVs';
+
+    // Nome da planilha e intervalo de células onde os dados serão salvos
+    var SHEET_NAME = 'Finanças';
+    var RANGE = SHEET_NAME + '!A1:D';
+
+    // Inicialização da API do Google Sheets
+    function init() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+        scope: 'https://www.googleapis.com/auth/spreadsheets'
+      }).then(function() {
+        // Adiciona o evento de envio do formulário
+        document.getElementById('registroForm').addEventListener('submit', saveData);
+      });
+    }
+
+    // Função para salvar os dados no Google Sheets
+    function saveData(event) {
+      event.preventDefault(); // Evita o envio padrão do formulário
+
+      // Obter os valores dos campos do formulário
+      var descricao = document.getElementById('descricao').value;
+      var valor = document.getElementById('valor').value;
+      var data = document.getElementById('data').value;
+      var movimento = document.getElementById('movimento').value;
+
+      // Montar os dados em um array para enviar ao Google Sheets
+      var rowData = [descricao, valor, data, movimento];
+
+      // Fazer a chamada para a API do Google Sheets para salvar os dados
+      gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: RANGE,
+        valueInputOption: 'USER_ENTERED',
+        resource: { values: [rowData] }
+      }).then(function(response) {
+        console.log('Dados salvos com sucesso!');
+        alert('Lançamento registrado com sucesso!');
+        // Limpar os campos do formulário
+        document.getElementById('descricao').value = '';
+        document.getElementById('valor').value = '';
+        document.getElementById('data').value = '';
+        document.getElementById('movimento').value = '';
+      }, function(error) {
+        console.error('Erro ao salvar os dados:', error);
+        alert('Ocorreu um erro ao salvar o lançamento.');
+      });
+    }
+
+    // Carregar a biblioteca da API do Google Sheets
+    gapi.load('client', init);
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
+</body>
+</html>
